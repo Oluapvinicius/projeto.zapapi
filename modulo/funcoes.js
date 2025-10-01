@@ -6,6 +6,7 @@
 
 
 //import do arquivo contatos
+const e = require('express')
 const dados = require('./contatos.js')
 const MESSAGE_ERROR = {status :false, statuscode: 500, development: 'Paulo Vinicius'}
 
@@ -52,8 +53,11 @@ const getDadosProfile = function(numero){
         profile_json.encerramentoDaConta = profile['created-since'].end
 
         message.perfil = profile_json
+        return message
+    }else{
+        return MESSAGE_ERROR
     }
-    return message
+    
 }
 
 const getContactsUsers = function(numero){
@@ -92,10 +96,10 @@ const getMensageUser = function(numero){
     let message = {status: true,statuscode: 200, development: 'Paulo Vinicius Lima Da Silva'}
 
     let userMensage = dados.contatos['whats-users'].find(function(profile){
-        return profile
+        return profile.contacts.some(item => item.number === messageUser)
     })
 
-    let macumbinha = []
+    let arrayMessage = []
     if(userMensage){
 
         let getNumber = userMensage.contacts.find(function(item){
@@ -106,21 +110,81 @@ const getMensageUser = function(numero){
         message_json.name = getNumber.name
         message_json.message = getNumber.messages
 
-        macumbinha.push(message_json)
+        arrayMessage.push(message_json)
 
-
+        message.contacts = message_json
+        return message
     }
+    
+    else{
+        return MESSAGE_ERROR
+    }
+}
+
+
+const getDadosUser = function(numero){
+    let messageUser = numero
+
+    let message = {status: true,statuscode: 200, development: 'Paulo Vinicius Lima Da Silva'}
+
+    let userMensage = dados.contatos['whats-users'].find(function(profile) {
+        return profile.contacts.some(item => item.number === messageUser)
+    })
+
+
+    let arrayMessage = []
+    if(userMensage){
+
+        let getNumber = userMensage.contacts.find(function(item){
+            return item.number === messageUser
+        })
+        
+        message_json = {}
+        message_json.name = getNumber.name
+        message_json.number = getNumber.number
+        message_json.message = getNumber.messages
+        
+
+        arrayMessage.push(message_json)
+
     message.contacts = message_json
     return message
+    } else{
+        return MESSAGE_ERROR
+
+    }
+}
+const pesquisarMensagens = function(numero, palavraChave) {
+    let user = dados.contatos['whats-users'].find(profile =>
+        profile.contacts.some(item => item.number === numero)
+    )
+
+    if (!user) return MESSAGE_ERROR
+
+    let contato = user.contacts.find(item => item.number === numero)
+    if (!contato) return MESSAGE_ERROR
+
+   
+    let mensagensFiltradas = contato.messages.filter(msg =>
+    msg.text && msg.text.toLowerCase().includes(palavraChave.toLowerCase())
+)
+
+    
+
+    
 }
 
 
 //const teste = getAllDados()
 //console.log(teste.users[0].contacts[0].messages) Esse console.log ele entra dentro dos arrays mostrando as mensagens
-///console.log(teste)
+//console.log(teste)
 
 //console.log(getDadosProfile('11987876567'))
 
 //console.log(getContactsUsers('11987876567'))
 
 //console.log(getMensageUser('26999999963'))
+
+let resultado = pesquisarMensagens("26999999963", "today")
+
+console.log(resultado)
