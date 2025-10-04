@@ -161,18 +161,23 @@ const pesquisarMensagens = function(numero, palavraChave) {
 
     if (!user) return MESSAGE_ERROR
 
-    let contato = user.contacts.find(item => item.number === numero)
+    let contato = user.contacts.find(item => item.number === numero);
     if (!contato) return MESSAGE_ERROR
 
-   
     let mensagensFiltradas = contato.messages.filter(msg =>
-    msg.text && msg.text.toLowerCase().includes(palavraChave.toLowerCase())
-)
+        msg.content && msg.content.toLowerCase().includes(palavraChave.toLowerCase())
+    )
 
-    
-
-    
+    return {
+        status: true,
+        statuscode: 200,
+        number: contato.number,
+        name: contato.name,
+        resultados: mensagensFiltradas
+    }
 }
+
+
 
 
 //const teste = getAllDados()
@@ -185,6 +190,15 @@ const pesquisarMensagens = function(numero, palavraChave) {
 
 //console.log(getMensageUser('26999999963'))
 
-let resultado = pesquisarMensagens("26999999963", "today")
+//let resultado = pesquisarMensagens("269999799601", "project")
 
-console.log(resultado)
+//console.log(resultado)
+
+module.exports = {
+    getAllDados,
+    getDadosProfile,
+    getContactsUsers,
+    getMensageUser,
+    getDadosUser,
+    pesquisarMensagens
+}
